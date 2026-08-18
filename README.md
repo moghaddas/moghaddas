@@ -6,9 +6,9 @@ Most of what I write is not public. What lands here is narrow: a problem I hit,
 could not find solved anywhere, and fixed.
 
 **[pdf-flatten-keep-text](https://github.com/moghaddas/pdf-flatten-keep-text)**
-A deck exported from Chrome opens black in macOS Preview. This flattens the
-artwork to one image per page and replays the text over it, so the page still
-selects, searches and copies.
+A slide deck opens black in macOS Preview, because Chrome's PDF backend stacks
+more compositing than the viewer will do. This flattens the artwork to one image
+per page and replays the text over it, so the page still selects and searches.
 
 **[claude-code-agent-steer](https://github.com/moghaddas/claude-code-agent-steer)**
 Correct a running Claude Code subagent mid-task, instead of waiting for it to
