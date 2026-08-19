@@ -1,14 +1,13 @@
 name: GitLab heatmap
 
-# Redraws the GitLab contribution heatmap once a day.
-#
-# The deep history lives in data/gitlab-contributions.json, committed to this
-# repo. A run only refetches the recent window and merges it in, so a normal day
-# costs a handful of API reads rather than a walk over six years.
+# Redraws the GitLab contribution heatmap once a day, using the
+# moghaddas/gitlab-heatmap action. The action keeps the deep history in
+# data/gitlab-contributions.json, committed to this repo, and only refetches
+# the recent window on a normal run.
 #
 # Needs a GITLAB_READ_TOKEN secret: a GitLab personal access token with the
-# read_api scope and nothing else. Do not use a token carrying `api`, because a
-# secret stored here is readable by any workflow in this repo.
+# read_api scope and nothing else. Do not use a token carrying `api`, because
+# a secret stored here is readable by any workflow in this repo.
 
 on:
   schedule:
@@ -31,32 +30,13 @@ jobs:
   draw:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: moghaddas/gitlab-heatmap@v1
         with:
-          python-version: "3.12"
-
-      - name: Draw the heatmap
-        env:
-          GITLAB_TOKEN: ${{ secrets.GITLAB_READ_TOKEN }}
-        run: |
-          if [ -z "$GITLAB_TOKEN" ]; then
-            echo "::warning::GITLAB_READ_TOKEN is not set. Redrawing from the cached history only."
-          fi
-          python3 scripts/gitlab_heatmap.py \
-            ${{ inputs.backfill && '--backfill' || '' }}
-
-      - name: Commit the result
-        run: |
-          git config user.name "Mo Moghaddas"
-          git config user.email "1793138+moghaddas@users.noreply.github.com"
-          git add gitlab-heatmap.svg data/gitlab-contributions.json
-          # Nothing changes on a quiet day, and an empty commit every morning
-          # would bury the real history of this repo.
-          if git diff --cached --quiet; then
-            echo "No change today."
-            exit 0
-          fi
-          git commit -m "Update the GitLab heatmap"
-          git push
+          gitlab-token: ${{ secrets.GITLAB_READ_TOKEN }}
+          identities: "mohammad@moghaddas.com,6602315-momoghaddas@users.noreply.gitlab.com,mo@zeeg.me"
+          since: "2020-01-01"
+          backfill: ${{ inputs.backfill }}
+          commit-user-name: "Mo Moghaddas"
+          commit-user-email: "1793138+moghaddas@users.noreply.github.com"
