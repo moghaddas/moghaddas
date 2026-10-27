@@ -8,6 +8,9 @@ name: GitLab heatmap
 # Needs a GITLAB_READ_TOKEN secret: a GitLab personal access token with the
 # read_api scope and nothing else. Do not use a token carrying `api`, because
 # a secret stored here is readable by any workflow in this repo.
+#
+# Needs a GITLAB_HEATMAP_IDENTITIES secret too: the commit emails to count,
+# comma-separated. A secret keeps them out of the public run logs.
 
 on:
   schedule:
@@ -35,7 +38,7 @@ jobs:
       - uses: moghaddas/gitlab-heatmap@v1
         with:
           gitlab-token: ${{ secrets.GITLAB_READ_TOKEN }}
-          identities: "mohammad@moghaddas.com,6602315-momoghaddas@users.noreply.gitlab.com"
+          identities: ${{ secrets.GITLAB_HEATMAP_IDENTITIES }}
           since: "2020-01-01"
           backfill: ${{ inputs.backfill }}
           commit-user-name: "Mo Moghaddas"
